@@ -40,6 +40,7 @@ builder.Services.AddHealthChecks()
 builder.Services.AddSingleton<PrizeAllocationPlanner>();
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<GameSummaryReadService>();
+builder.Services.AddSingleton<GameBoardReadService>();
 builder.Services.AddSingleton<ScratchService>();
 builder.Services.AddSingleton<ScratchAttemptReadService>();
 
@@ -82,6 +83,14 @@ app.MapGet("/api/bootstrap/default-game", async (GameSummaryReadService readServ
     .WithName("GetDefaultGameSummary")
     .WithSummary("Get the configured default game's summary.")
     .WithDescription("Returns the default game's dimensions, seeded prize counts, current scratch-claim count, initialization timestamp, and seed version.");
+app.MapGet("/api/games/default-game/grid-state", async (GameBoardReadService readService, CancellationToken cancellationToken) =>
+{
+    var boardState = await readService.GetDefaultGameBoardStateAsync(cancellationToken);
+    return boardState is null ? Results.NotFound() : Results.Ok(boardState);
+})
+    .WithName("GetDefaultGameBoardState")
+    .WithSummary("Get the current board state for the default game.")
+    .WithDescription("Returns the default game's dimensions and the set of scratched cells with their revealed outcomes. Unclaimed cells remain unrevealed.");
 app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, ScratchService scratchService, CancellationToken cancellationToken) =>
 {
     var result = await scratchService.ScratchAsync(request, cancellationToken);

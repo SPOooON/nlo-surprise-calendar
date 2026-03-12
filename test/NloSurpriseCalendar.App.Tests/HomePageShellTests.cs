@@ -44,5 +44,7 @@ public sealed class HomePageShellTests(PostgresContainerFixture postgresFixture)
         Assert.Contains(".content-frame {", css);
         Assert.Contains(".nav-item .nav-link {", css);
         Assert.Contains(".home-shell", css);
+        Assert.Contains(".calendar-grid {", css);
+        Assert.Contains(".calendar-cell {", css);
     }
 }

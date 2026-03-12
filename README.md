@@ -19,6 +19,7 @@ Application URLs:
 - Live health: `http://localhost:8080/health/live`
 - Readiness health: `http://localhost:8080/health/ready`
 - Default game summary: `http://localhost:8080/api/bootstrap/default-game`
+- Grid state endpoint: `GET http://localhost:8080/api/games/default-game/grid-state`
 - Scratch endpoint: `POST http://localhost:8080/api/games/default-game/scratch`
 - Audit log endpoint: `GET http://localhost:8080/api/games/default-game/audit-attempts`
 
@@ -27,7 +28,8 @@ UI flow:
 - enter a self-declared participant identifier
 - optionally cache it locally in the browser
 - clear it again via the visible `Log out` action
-- choose a row and column, then submit a scratch request
+- click a tile on the homepage grid to select a cell
+- confirm the scratch with the existing submit button
 - inspect the result panel for win, loss, duplicate-user, or duplicate-cell outcomes
 - inspect the audit log page to review accepted and rejected attempts with their recorded reason codes
 - open the API docs directly from the homepage when you want to inspect or exercise the endpoints

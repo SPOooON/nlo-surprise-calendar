@@ -101,30 +101,29 @@
                     </div>
                 </div>
 
-                <div class="picker-grid">
-                    <div class="field-stack">
-                        <label class="field-label" for="selected-row">Row</label>
-                        <input id="selected-row"
-                               class="text-field"
-                               type="number"
-                               min="1"
-                               max="@Summary.Height"
-                               @bind="SelectedRow" />
-                    </div>
-                    <div class="field-stack">
-                        <label class="field-label" for="selected-column">Column</label>
-                        <input id="selected-column"
-                               class="text-field"
-                               type="number"
-                               min="1"
-                               max="@Summary.Width"
-                               @bind="SelectedColumn" />
+                <div class="selection-copy">
+                    <p class="panel-copy">
+                        Select a tile on the grid, then confirm the scratch. Unclaimed cells stay neutral so hidden prize positions are not leaked.
+                    </p>
+                </div>
+
+                <div class="calendar-grid-wrap">
+                    <div class="calendar-grid" style="@GridTemplateStyle">
+                        @foreach (var cellIndex in GridCellIndices)
+                        {
+                            <button type="button"
+                                    class="@GetCellClass(cellIndex)"
+                                    title="@GetCellLabel(cellIndex)"
+                                    aria-label="@GetCellLabel(cellIndex)"
+                                    @onclick="@(() => SelectCell(cellIndex))">
+                            </button>
+                        }
                     </div>
                 </div>
 
                 <div class="selection-preview">
                     <span class="selection-label">Selected cell</span>
-                    <strong>Row @NormalizedRow, column @NormalizedColumn</strong>
+                    <strong>Row @SelectedRow, column @SelectedColumn</strong>
                     <span>Cell index @SelectedCellIndex</span>
                 </div>
 
@@ -166,34 +165,34 @@
     };
 
     private GameSummary? Summary;
+    private GameBoardState? BoardState;
     private ScratchResult? LastResult;
+    private Dictionary<int, GridCellState> _scratchedCellLookup = [];
+    private int[] _gridCellIndices = [];
     private string ParticipantId { get; set; } = string.Empty;
     private string? IdentityStatusMessage { get; set; }
     private string? LoadErrorMessage { get; set; }
-    private int SelectedRow { get; set; } = 1;
-    private int SelectedColumn { get; set; } = 1;
+    private int SelectedCellIndex { get; set; }
     private bool IsLoading { get; set; } = true;
     private bool IsSubmitting { get; set; }
     private bool _initialized;
 
     private UiResultState? ResultState => LastResult is null ? null : BuildResultState(LastResult);
 
-    private int NormalizedRow => Summary is null
-        ? 1
-        : Math.Clamp(SelectedRow, 1, Summary.Height);
+    private int SelectedRow => Summary is null ? 1 : (SelectedCellIndex / Summary.Width) + 1;
 
-    private int NormalizedColumn => Summary is null
-        ? 1
-        : Math.Clamp(SelectedColumn, 1, Summary.Width);
-
-    private int SelectedCellIndex => Summary is null
-        ? 0
-        : ((NormalizedRow - 1) * Summary.Width) + (NormalizedColumn - 1);
+    private int SelectedColumn => Summary is null ? 1 : (SelectedCellIndex % Summary.Width) + 1;
 
     private bool CanSubmitScratch =>
         !IsSubmitting &&
         Summary is not null &&
         !string.IsNullOrWhiteSpace(ParticipantId);
+
+    private string GridTemplateStyle => Summary is null ? string.Empty : $"--grid-columns: {Summary.Width};";
+
+    private IReadOnlyDictionary<int, GridCellState> ScratchedCellLookup => _scratchedCellLookup;
+
+    private IReadOnlyList<int> GridCellIndices => _gridCellIndices;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -204,21 +203,24 @@
 
         _initialized = true;
         ParticipantId = await JsRuntime.InvokeAsync<string?>("nloIdentityStorage.get") ?? string.Empty;
-        await LoadSummaryAsync();
+        await LoadGameStateAsync();
         StateHasChanged();
     }
 
-    private async Task LoadSummaryAsync()
+    private async Task LoadGameStateAsync()
     {
         try
         {
             using var client = CreateClient();
             Summary = await client.GetFromJsonAsync<GameSummary>("/api/bootstrap/default-game", JsonOptions);
-            LoadErrorMessage = Summary is null ? "The bootstrap game endpoint returned no summary." : null;
+            BoardState = await client.GetFromJsonAsync<GameBoardState>("/api/games/default-game/grid-state", JsonOptions);
+            _scratchedCellLookup = BoardState?.ScratchedCells.ToDictionary(cell => cell.CellIndex) ?? [];
+            _gridCellIndices = Summary is null ? [] : Enumerable.Range(0, Summary.Width * Summary.Height).ToArray();
+            LoadErrorMessage = Summary is null || BoardState is null ? "The game state endpoints returned no data." : null;
         }
         catch (Exception exception)
         {
-            LoadErrorMessage = $"Failed to load the bootstrap summary: {exception.Message}";
+            LoadErrorMessage = $"Failed to load the game state: {exception.Message}";
         }
         finally
         {
@@ -272,10 +274,7 @@
             ParticipantId = request.ParticipantId;
             IdentityStatusMessage = "Stored locally in this browser.";
 
-            if (response.IsSuccessStatusCode && Summary is not null)
-            {
-                Summary = Summary with { ScratchClaimCount = Summary.ScratchClaimCount + 1 };
-            }
+            await LoadGameStateAsync();
         }
         catch (Exception exception)
         {
@@ -292,6 +291,50 @@
         var client = HttpClientFactory.CreateClient();
         client.BaseAddress = new Uri(NavigationManager.BaseUri);
         return client;
+    }
+
+    private void SelectCell(int cellIndex)
+    {
+        SelectedCellIndex = cellIndex;
+        IdentityStatusMessage = null;
+    }
+
+    private string GetCellClass(int cellIndex)
+    {
+        if (cellIndex == SelectedCellIndex)
+        {
+            return "calendar-cell cell-selected";
+        }
+
+        if (!ScratchedCellLookup.TryGetValue(cellIndex, out var cell))
+        {
+            return "calendar-cell cell-available";
+        }
+
+        return cell.ClaimResult switch
+        {
+            "jackpot" => "calendar-cell cell-jackpot",
+            "consolation" => "calendar-cell cell-consolation",
+            _ => "calendar-cell cell-empty"
+        };
+    }
+
+    private string GetCellLabel(int cellIndex)
+    {
+        var row = Summary is null ? 1 : (cellIndex / Summary.Width) + 1;
+        var column = Summary is null ? 1 : (cellIndex % Summary.Width) + 1;
+
+        if (!ScratchedCellLookup.TryGetValue(cellIndex, out var cell))
+        {
+            return $"Row {row}, column {column}, available";
+        }
+
+        return cell.ClaimResult switch
+        {
+            "jackpot" => $"Row {row}, column {column}, scratched jackpot",
+            "consolation" => $"Row {row}, column {column}, scratched consolation prize",
+            _ => $"Row {row}, column {column}, scratched empty"
+        };
     }
 
     private static UiResultState BuildResultState(ScratchResult result) => result.Outcome switch

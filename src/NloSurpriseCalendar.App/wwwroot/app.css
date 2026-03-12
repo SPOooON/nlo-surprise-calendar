@@ -218,6 +218,11 @@ main {
     text-decoration: none;
 }
 
+.hero-link-secondary {
+    background: #f3f4f6;
+    color: #111827;
+}
+
 .workspace-grid {
     display: grid;
     gap: 1.5rem;
@@ -309,6 +314,64 @@ main {
 
 .selection-preview {
     margin-top: 1rem;
+}
+
+.selection-copy {
+    margin-top: 1rem;
+}
+
+.calendar-grid-wrap {
+    margin-top: 1rem;
+    overflow: auto;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.85rem;
+    background: #f9fafb;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), 0.9rem);
+    gap: 0.15rem;
+    width: max-content;
+}
+
+.calendar-cell {
+    width: 0.9rem;
+    height: 0.9rem;
+    padding: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 0.2rem;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.calendar-cell:hover {
+    border-color: #9ca3af;
+}
+
+.cell-selected {
+    background: #dbeafe;
+    border-color: #2563eb;
+}
+
+.cell-available {
+    background: #ffffff;
+}
+
+.cell-empty {
+    background: #d1d5db;
+    border-color: #9ca3af;
+}
+
+.cell-consolation {
+    background: #86efac;
+    border-color: #16a34a;
+}
+
+.cell-jackpot {
+    background: #fcd34d;
+    border-color: #d97706;
 }
 
 .inline-message {

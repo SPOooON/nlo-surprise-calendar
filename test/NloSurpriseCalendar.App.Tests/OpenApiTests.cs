@@ -31,6 +31,7 @@ public sealed class OpenApiTests(PostgresContainerFixture postgresFixture) : IAs
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"openapi\"", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("/api/bootstrap/default-game", content, StringComparison.Ordinal);
+        Assert.Contains("/api/games/default-game/grid-state", content, StringComparison.Ordinal);
         Assert.Contains("/api/games/default-game/scratch", content, StringComparison.Ordinal);
     }
 
