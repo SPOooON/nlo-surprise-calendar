@@ -14,6 +14,8 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 
 I also kept tightening the demo based on what was actually visible while using it, instead of treating the first pass as finished. That included noticing when the page framing was too subtle and pushing for clearer presentation without expanding the core scope.
 
+I also caught a CSS regression during the OpenAPI work instead of hand-waving it away, and I chose to simplify the site colors when readability suffered. That was the right trade-off for an assignment demo: plain and legible beats decorative styling.
+
 ### What AI was used for
 
 - turning the assignment text into explicit mandatory scope versus optional scope
@@ -40,6 +42,7 @@ I also kept tightening the demo based on what was actually visible while using i
 - Split broad optional backlog items into specific GitHub issues once the mandatory scope is done, so stretch work stays reviewable and easy to prioritize.
 - Remove optional backlog items again when they are only plumbing and do not stand on their own as useful reviewer-facing scope.
 - For the API docs stretch goal, use built-in ASP.NET Core OpenAPI generation plus Scalar instead of Swagger-specific tooling.
+- Add a lightweight regression test when a concrete UI integration issue is found, even if the assignment does not justify a full browser-test stack.
 
 ### Why those decisions fit the assignment
 
@@ -56,6 +59,7 @@ I also kept tightening the demo based on what was actually visible while using i
 - Once the mandatory scope is complete, the best next extras are the ones that improve reviewer visibility with the least architectural churn.
 - That same rule also means dropping optional issues that are better folded into a stronger parent feature instead of preserving them as standalone backlog noise.
 - Built-in OpenAPI plus a homepage-linked docs UI improves reviewer visibility with low implementation risk and better matches modern .NET direction than adding Swagger.
+- When presentation gets in the way of clarity, simplify it. The assignment benefits more from readable UI than from visual styling.
 
 ### Notes for implementation
 

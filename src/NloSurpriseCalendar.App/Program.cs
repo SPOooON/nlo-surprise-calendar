@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.OpenApi;
 using NloSurpriseCalendar.App.Components;
 using NloSurpriseCalendar.App.Infrastructure;
 using NloSurpriseCalendar.App.Persistence;
@@ -14,7 +15,20 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Info = new OpenApiInfo
+        {
+            Title = "NLO Surprise Calendar API",
+            Version = "v1",
+            Description = "Demo API for the Nederlandse Loterij surprise calendar assignment. It exposes the bootstrap game summary and the transactional scratch operation.",
+        };
+
+        return Task.CompletedTask;
+    });
+});
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -46,18 +60,27 @@ app.MapStaticAssets();
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = _ => false,
-});
+})
+    .WithName("LiveHealth")
+    .WithSummary("Check whether the app process is alive.")
+    .WithDescription("Returns 200 when the application is running, without checking external dependencies.");
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = check => check.Tags.Contains("ready"),
-});
+})
+    .WithName("ReadyHealth")
+    .WithSummary("Check whether the app is ready to serve requests.")
+    .WithDescription("Returns 200 only when the PostgreSQL dependency passes the readiness check.");
 app.MapOpenApi("/openapi/{documentName}.json");
 app.MapScalarApiReference("/docs", options => options.WithTitle("NLO Surprise Calendar API"));
 app.MapGet("/api/bootstrap/default-game", async (GameSummaryReadService readService, CancellationToken cancellationToken) =>
 {
     var summary = await readService.GetDefaultGameSummaryAsync(cancellationToken);
     return summary is null ? Results.NotFound() : Results.Ok(summary);
-});
+})
+    .WithName("GetDefaultGameSummary")
+    .WithSummary("Get the configured default game's summary.")
+    .WithDescription("Returns the default game's dimensions, seeded prize counts, current scratch-claim count, initialization timestamp, and seed version.");
 app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, ScratchService scratchService, CancellationToken cancellationToken) =>
 {
     var result = await scratchService.ScratchAsync(request, cancellationToken);
@@ -71,7 +94,10 @@ app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, Sc
         ScratchAttemptOutcome.CellAlreadyScratched => Results.Conflict(result),
         _ => Results.StatusCode(StatusCodes.Status500InternalServerError),
     };
-});
+})
+    .WithName("ScratchDefaultGameCell")
+    .WithSummary("Attempt to scratch a cell in the default game.")
+    .WithDescription("Accepts a self-declared participant identifier and a cell index. The API enforces one scratch per participant and one scratch per cell, with accepted and rejected attempts recorded for auditability.");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
