@@ -44,6 +44,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - Start with a simple user identifier approach instead of full authentication.
 - Cache that identifier in the browser for convenience and provide a visible way to clear it.
 - Prioritize integration tests for same-cell and same-user contention.
+- Keep `docs/DESIGN.md` intentionally concise and within roughly two pages.
 - Keep `README.md` for setup and keep all other product/technical notes under `docs/`.
 
 ### What I want a reviewer to see
