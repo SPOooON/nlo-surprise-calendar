@@ -12,6 +12,8 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 
 I also chose to log failed scratch attempts with explicit reason codes. For a lottery context, being able to explain rejected actions is worth the extra persistence work.
 
+I also kept tightening the demo based on what was actually visible while using it, instead of treating the first pass as finished. That included noticing when the page framing was too subtle and pushing for clearer presentation without expanding the core scope.
+
 ### What AI was used for
 
 - turning the assignment text into explicit mandatory scope versus optional scope
