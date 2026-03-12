@@ -2,8 +2,8 @@ html, body {
     margin: 0;
     min-height: 100%;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #17342c;
-    background: #f7f4ec;
+    color: #1f2933;
+    background: #f3f4f6;
 }
 
 * {
@@ -23,4 +23,375 @@ select {
 
 code {
     font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f3f4f6;
+}
+
+main {
+    flex: 1;
+}
+
+.sidebar {
+    background: #ffffff;
+    border-right: 1px solid #d2d6dc;
+}
+
+.top-row {
+    border-bottom: 1px solid #d2d6dc;
+    background: #ffffff;
+}
+
+.top-row-copy {
+    min-height: 3.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 1.5rem;
+    color: #4b5563;
+}
+
+.top-row-copy a {
+    color: #111827;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.content {
+    padding: 1.5rem;
+}
+
+.content-frame {
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    border: 1px solid #d2d6dc;
+    border-radius: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.nav-brand-wrap {
+    padding: 1.5rem 1.25rem;
+}
+
+.navbar-brand {
+    color: #111827;
+    font-size: 1.25rem;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.nav-subtitle {
+    margin: 0.3rem 0 0;
+    color: #6b7280;
+    font-size: 0.92rem;
+}
+
+.nav-scrollable {
+    padding: 1.25rem;
+}
+
+.nav-item {
+    margin-bottom: 0.75rem;
+}
+
+.nav-item .nav-link {
+    display: block;
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: #f3f4f6;
+    color: #111827;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-item .nav-link.active {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.nav-meta {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 1.25rem;
+    color: #4b5563;
+    font-size: 0.92rem;
+}
+
+.nav-meta code {
+    color: #111827;
+}
+
+.home-shell {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.hero-panel,
+.panel {
+    border: 1px solid #d2d6dc;
+    border-radius: 1.25rem;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.hero-panel {
+    padding: 2rem;
+}
+
+.eyebrow,
+.section-kicker,
+.summary-label,
+.selection-label {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    color: #6b7280;
+}
+
+.hero-panel h1,
+.panel h2 {
+    margin: 0.25rem 0 0;
+    color: #111827;
+}
+
+.hero-copy,
+.panel-copy {
+    margin: 0.75rem 0 0;
+    color: #4b5563;
+    max-width: 62ch;
+}
+
+.hero-meta,
+.summary-grid,
+.picker-grid,
+.result-meta,
+.action-row,
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.hero-meta,
+.hero-actions {
+    margin-top: 1.25rem;
+}
+
+.hero-meta span,
+.result-meta span {
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 0.92rem;
+}
+
+.hero-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.1rem;
+    border-radius: 999px;
+    background: #111827;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.hero-link-secondary {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.workspace-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.panel {
+    padding: 1.5rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.field-stack {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+}
+
+.field-label {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.text-field {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.9rem;
+    padding: 0.8rem 0.95rem;
+    background: #ffffff;
+    color: #111827;
+}
+
+.text-field:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.15);
+    border-color: #94a3b8;
+}
+
+.action-row {
+    margin-top: 1rem;
+    align-items: center;
+}
+
+.primary-action,
+.secondary-action {
+    border: none;
+    border-radius: 999px;
+    padding: 0.8rem 1.15rem;
+    font-weight: 600;
+}
+
+.primary-action {
+    margin-top: 1.25rem;
+    background: #111827;
+    color: #ffffff;
+}
+
+.secondary-action {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.primary-action:disabled,
+.secondary-action:disabled {
+    opacity: 0.55;
+}
+
+.summary-grid {
+    margin-top: 1.25rem;
+}
+
+.summary-grid > div,
+.selection-preview {
+    min-width: 10rem;
+    padding: 0.9rem 1rem;
+    border-radius: 1rem;
+    background: #f9fafb;
+    display: grid;
+    gap: 0.2rem;
+}
+
+.picker-grid {
+    margin-top: 1rem;
+}
+
+.picker-grid > .field-stack {
+    flex: 1 1 12rem;
+    margin-top: 0;
+}
+
+.selection-preview {
+    margin-top: 1rem;
+}
+
+.inline-message {
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.status-card {
+    margin-top: 1rem;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.status-error {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.result-panel {
+    background: #ffffff;
+}
+
+.result-badge {
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    font-weight: 700;
+}
+
+.badge-win {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-empty {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.badge-conflict {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-invalid {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+@media (max-width: 700px) {
+    .top-row-copy {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 1rem 1.25rem;
+    }
+
+    .content-frame {
+        padding: 1rem;
+        border-width: 1px;
+    }
+}
+
+@media (min-width: 900px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 19rem;
+        min-height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .content {
+        padding: 2rem;
+    }
+
+    .workspace-grid {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
 }

@@ -56,6 +56,13 @@
     margin-top: 1.25rem;
 }
 
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
 .hero-meta span,
 .result-meta span {
     padding: 0.45rem 0.75rem;
@@ -63,6 +70,23 @@
     background: #edf4f0;
     color: #27463d;
     font-size: 0.92rem;
+}
+
+.hero-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.1rem;
+    border-radius: 999px;
+    background: #17342c;
+    color: #fff7e7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.hero-link-secondary {
+    background: #edf4f0;
+    color: #17342c;
 }
 
 .workspace-grid {
