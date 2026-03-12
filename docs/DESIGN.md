@@ -48,6 +48,7 @@ Build a backend-first surprise calendar that is correct under concurrency, persi
 
 - Keep the Blazor UI minimal and functional.
 - Support entering a self-declared user identifier, selecting a cell, and showing the result.
+- Use a pragmatic row-and-column picker instead of trying to render and manage all 10,000 cells in the MVP UI.
 - Cache the identifier client-side for convenience and provide a clear "log out" or "clear identity" action that removes it from local storage.
 - Avoid UI work that does not improve the demonstration of correctness.
 

@@ -10,7 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")
     ?? throw new InvalidOperationException("Connection string 'Postgres' is not configured.");
 
 // Add services to the container.
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddHttpClient();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -66,7 +68,8 @@ app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, Sc
         _ => Results.StatusCode(StatusCodes.Status500InternalServerError),
     };
 });
-app.MapRazorComponents<App>();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();
 
