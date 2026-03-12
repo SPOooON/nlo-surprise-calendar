@@ -1,62 +1,71 @@
 # nlo-surprise-calendar
 
-Backend case assignment for Nederlandse Loterij: a concurrency-safe surprise calendar with fair prize distribution and persistent scratched-cell state.
+Backend case assignment for Nederlandse Loterij: a concurrency-safe surprise calendar with persistent state, a minimal Blazor UI, and PostgreSQL as the source of truth.
 
 ## Run
 
-Use Docker Compose as the primary local run path:
+Primary local run path:
 
 ```bash
 docker compose up --build
 ```
 
-Application URLs:
+Main URLs:
 
 - App: `http://localhost:8080`
-- Audit log view: `http://localhost:8080/audit`
-- API docs UI: `http://localhost:8080/docs`
+- Audit log: `http://localhost:8080/audit`
+- API docs: `http://localhost:8080/docs`
 - OpenAPI JSON: `http://localhost:8080/openapi/v1.json`
-- Live health: `http://localhost:8080/health/live`
-- Readiness health: `http://localhost:8080/health/ready`
-- Default game summary: `http://localhost:8080/api/bootstrap/default-game`
-- Grid state endpoint: `GET http://localhost:8080/api/games/default-game/grid-state`
-- Scratch endpoint: `POST http://localhost:8080/api/games/default-game/scratch`
-- Audit log endpoint: `GET http://localhost:8080/api/games/default-game/audit-attempts`
+- Readiness: `http://localhost:8080/health/ready`
+
+Main API routes:
+
+- Summary: `GET /api/bootstrap/default-game`
+- Grid state: `GET /api/games/default-game/grid-state`
+- Scratch: `POST /api/games/default-game/scratch`
+- Audit attempts: `GET /api/games/default-game/audit-attempts`
 
 UI flow:
 
-- enter a self-declared participant identifier
-- optionally cache it locally in the browser
-- clear it again via the visible `Log out` action
-- click a tile on the homepage grid to select a cell
-- confirm the scratch with the existing submit button
-- inspect the result panel for win, loss, duplicate-user, or duplicate-cell outcomes
-- inspect the audit log page to review accepted and rejected attempts with their recorded reason codes
-- open the API docs directly from the homepage when you want to inspect or exercise the endpoints
+1. Enter a self-declared participant identifier.
+2. Optionally cache it in the browser.
+3. Select a tile on the homepage grid.
+4. Confirm with the scratch button.
+5. Review the result panel or audit page.
 
-To stop the stack:
+Stop the stack with:
 
 ```bash
 docker compose down
 ```
 
-## Test
+## Validation
 
-Automated tests run from the repository root:
+Local validation:
 
 ```bash
-dotnet test -c Release
+dotnet restore NloSurpriseCalendar.slnx
+dotnet build NloSurpriseCalendar.slnx -c Release
+dotnet test NloSurpriseCalendar.slnx -c Release
 ```
 
-The integration tests use Testcontainers to start an isolated PostgreSQL instance, so Docker must be available when running the test suite.
+The test suite uses Testcontainers, so Docker must be available.
 
-A lightweight GitHub Actions workflow mirrors the same restore, build, and test sequence on pull requests to `main`.
+GitHub Actions mirrors the same restore, build, and test flow on pull requests to `main`.
 
 ## Review Trail
 
-The implementation process is tracked in GitHub issues, pull requests, and PR comments in addition to the repository docs. Reviewers can inspect that trail if they want to see the decision-making and review loop behind the code.
+The repo includes both implementation docs and the GitHub working trail. Reviewers can inspect issues, PRs, and PR comments if they want the decision history behind the code.
 
-## Documentation
+## Postmortem
+
+- Total time was about 4 hours, including a lunch break.
+- The strongest part of the assignment is the backend correctness story: transactional scratch handling, PostgreSQL constraints, audit logging, and database-backed tests.
+- Keeping the UI and identity model intentionally simple helped keep the timebox focused on the real risks.
+- Reviewer-facing extras like the audit view, OpenAPI docs, homepage grid, and CI were worth doing because they improved inspectability without changing the core design.
+- `#12` multi-game support was left out on purpose. It is a valid next step, but too large for this assignment window without weakening the core implementation.
+
+## Docs
 
 - [Design notes](docs/DESIGN.md)
 - [AI notes](docs/AI-NOTES.md)
