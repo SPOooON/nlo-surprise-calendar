@@ -1,0 +1,154 @@
+@page "/audit"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NavigationManager
+
+@using System.Text.Json
+@using NloSurpriseCalendar.App.Persistence.Models
+
+<PageTitle>Scratch Audit Log</PageTitle>
+
+<div class="audit-shell">
+    <section class="panel">
+        <header class="panel-header">
+            <div>
+                <p class="section-kicker">Audit</p>
+                <h1>Scratch attempt audit log</h1>
+            </div>
+            <button class="secondary-action" @onclick="LoadAuditLogAsync" disabled="@IsLoading">
+                @(IsLoading ? "Refreshing..." : "Refresh log")
+            </button>
+        </header>
+
+        <p class="panel-copy">
+            This reviewer view shows the latest accepted and rejected scratch attempts, including the recorded reason code for conflicts and invalid requests.
+        </p>
+
+        @if (LoadErrorMessage is not null)
+        {
+            <div class="status-card status-error">
+                <strong>Audit log unavailable</strong>
+                <p>@LoadErrorMessage</p>
+            </div>
+        }
+        else if (AuditLog is null)
+        {
+            <p class="panel-copy">Loading audit trail...</p>
+        }
+        else
+        {
+            <div class="summary-grid">
+                <div>
+                    <span class="summary-label">Entries shown</span>
+                    <strong>@AuditLog.ReturnedCount</strong>
+                </div>
+                <div>
+                    <span class="summary-label">Latest outcome</span>
+                    <strong>@(AuditLog.Attempts.FirstOrDefault()?.OutcomeCode ?? "none")</strong>
+                </div>
+                <div>
+                    <span class="summary-label">Game</span>
+                    <strong>@AuditLog.GameSlug</strong>
+                </div>
+            </div>
+
+            <div class="audit-table-wrap">
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Time (UTC)</th>
+                            <th scope="col">Participant</th>
+                            <th scope="col">Cell</th>
+                            <th scope="col">Outcome</th>
+                            <th scope="col">Claim</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (AuditLog.Attempts.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="audit-empty">No scratch attempts have been recorded yet.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var attempt in AuditLog.Attempts)
+                            {
+                                <tr>
+                                    <td>@attempt.OccurredUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@DisplayParticipant(attempt.ParticipantId)</td>
+                                    <td><code>@attempt.RequestedCellIndex</code></td>
+                                    <td><span class="@($"result-badge {GetBadgeClass(attempt.OutcomeCode)}")">@attempt.OutcomeCode</span></td>
+                                    <td>@DisplayClaim(attempt)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private ScratchAttemptAuditLog? AuditLog;
+    private string? LoadErrorMessage;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAuditLogAsync();
+    }
+
+    private async Task LoadAuditLogAsync()
+    {
+        IsLoading = true;
+        LoadErrorMessage = null;
+
+        try
+        {
+            using var client = CreateClient();
+            AuditLog = await client.GetFromJsonAsync<ScratchAttemptAuditLog>("/api/games/default-game/audit-attempts?take=50", JsonOptions);
+            if (AuditLog is null)
+            {
+                LoadErrorMessage = "The audit endpoint returned no data.";
+            }
+        }
+        catch (Exception exception)
+        {
+            LoadErrorMessage = $"Failed to load the audit log: {exception.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private HttpClient CreateClient()
+    {
+        var client = HttpClientFactory.CreateClient();
+        client.BaseAddress = new Uri(NavigationManager.BaseUri);
+        return client;
+    }
+
+    private static string DisplayParticipant(string participantId) =>
+        string.IsNullOrWhiteSpace(participantId) ? "(empty)" : participantId;
+
+    private static string DisplayClaim(ScratchAttemptEventSummary attempt) =>
+        attempt.ClaimResult is null
+            ? "-"
+            : attempt.AwardedPrizeType is null
+                ? attempt.ClaimResult
+                : $"{attempt.ClaimResult} / {attempt.AwardedPrizeType}";
+
+    private static string GetBadgeClass(string outcomeCode) => outcomeCode switch
+    {
+        "accepted" => "badge-win",
+        "participant_already_scratched" => "badge-conflict",
+        "cell_already_scratched" => "badge-conflict",
+        "invalid_cell" => "badge-invalid",
+        "invalid_participant" => "badge-invalid",
+        _ => "badge-empty",
+    };
+}

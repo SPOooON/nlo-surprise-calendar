@@ -13,12 +13,14 @@ docker compose up --build
 Application URLs:
 
 - App: `http://localhost:8080`
+- Audit log view: `http://localhost:8080/audit`
 - API docs UI: `http://localhost:8080/docs`
 - OpenAPI JSON: `http://localhost:8080/openapi/v1.json`
 - Live health: `http://localhost:8080/health/live`
 - Readiness health: `http://localhost:8080/health/ready`
 - Default game summary: `http://localhost:8080/api/bootstrap/default-game`
 - Scratch endpoint: `POST http://localhost:8080/api/games/default-game/scratch`
+- Audit log endpoint: `GET http://localhost:8080/api/games/default-game/audit-attempts`
 
 UI flow:
 
@@ -27,6 +29,7 @@ UI flow:
 - clear it again via the visible `Log out` action
 - choose a row and column, then submit a scratch request
 - inspect the result panel for win, loss, duplicate-user, or duplicate-cell outcomes
+- inspect the audit log page to review accepted and rejected attempts with their recorded reason codes
 - open the API docs directly from the homepage when you want to inspect or exercise the endpoints
 
 To stop the stack:

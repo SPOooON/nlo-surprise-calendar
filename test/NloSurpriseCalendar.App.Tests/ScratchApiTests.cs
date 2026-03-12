@@ -158,4 +158,20 @@ public sealed class ScratchApiTests(PostgresContainerFixture postgresFixture) : 
         Assert.Contains(outcomes, result => result is not null && result.Outcome == ScratchAttemptOutcome.ParticipantAlreadyScratched);
         Assert.Equal(1, await _factory.GetScratchClaimCountAsync());
     }
+
+    [Fact]
+    public async Task AuditEndpoint_Returns_RecentAttempts_InDescendingOrder()
+    {
+        await _client.PostAsJsonAsync("/api/games/default-game/scratch", new ScratchRequest("alpha", 42));
+        await _client.PostAsJsonAsync("/api/games/default-game/scratch", new ScratchRequest("alpha", 43));
+
+        var auditLog = await _client.GetFromJsonAsync<ScratchAttemptAuditLog>("/api/games/default-game/audit-attempts?take=10", JsonOptions);
+
+        Assert.NotNull(auditLog);
+        Assert.Equal("main", auditLog.GameSlug);
+        Assert.Equal(2, auditLog.ReturnedCount);
+        Assert.Equal("participant_already_scratched", auditLog.Attempts[0].OutcomeCode);
+        Assert.Equal("accepted", auditLog.Attempts[1].OutcomeCode);
+        Assert.True(auditLog.Attempts[0].AttemptId > auditLog.Attempts[1].AttemptId);
+    }
 }

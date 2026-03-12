@@ -41,6 +41,7 @@ builder.Services.AddSingleton<PrizeAllocationPlanner>();
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<GameSummaryReadService>();
 builder.Services.AddSingleton<ScratchService>();
+builder.Services.AddSingleton<ScratchAttemptReadService>();
 
 var app = builder.Build();
 await app.Services.GetRequiredService<DatabaseInitializer>().InitializeAsync();
@@ -98,6 +99,14 @@ app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, Sc
     .WithName("ScratchDefaultGameCell")
     .WithSummary("Attempt to scratch a cell in the default game.")
     .WithDescription("Accepts a self-declared participant identifier and a cell index. The API enforces one scratch per participant and one scratch per cell, with accepted and rejected attempts recorded for auditability.");
+app.MapGet("/api/games/default-game/audit-attempts", async (int? take, ScratchAttemptReadService readService, CancellationToken cancellationToken) =>
+{
+    var log = await readService.GetDefaultGameAuditLogAsync(take ?? 50, cancellationToken);
+    return Results.Ok(log);
+})
+    .WithName("GetDefaultGameAuditAttempts")
+    .WithSummary("List recent audit log entries for the bootstrap game.")
+    .WithDescription("Returns the most recent accepted and rejected scratch attempts recorded for the default game.");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
