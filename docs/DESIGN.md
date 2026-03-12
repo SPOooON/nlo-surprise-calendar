@@ -35,6 +35,7 @@ Build a backend-first surprise calendar that is correct under concurrency, persi
 - Keep scratch operations transactional.
 - Persist enough data to reconstruct current state after restart without relying on in-memory caches.
 - Keep auditability explicit: prize allocation and scratch outcomes should be explainable from persisted records in the database.
+- Separate authoritative scratch claims from append-only attempt-event auditing so rejected requests can be explained without weakening core invariants.
 - Leave room in the model for future multi-game support, but keep that feature out of the MVP.
 
 ## Concurrency direction

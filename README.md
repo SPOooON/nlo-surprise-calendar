@@ -16,6 +16,7 @@ Application URLs:
 - Live health: `http://localhost:8080/health/live`
 - Readiness health: `http://localhost:8080/health/ready`
 - Default game summary: `http://localhost:8080/api/bootstrap/default-game`
+- Scratch endpoint: `POST http://localhost:8080/api/games/default-game/scratch`
 
 To stop the stack:
 

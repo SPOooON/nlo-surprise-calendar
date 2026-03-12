@@ -68,6 +68,19 @@ public sealed class DatabaseInitializer(
                 UNIQUE (game_id, cell_index)
             );
 
+            CREATE TABLE IF NOT EXISTS scratch_attempt_events (
+                id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                game_id UUID NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+                participant_id TEXT NOT NULL,
+                requested_cell_index INTEGER NOT NULL,
+                outcome_code TEXT NOT NULL CHECK (
+                    outcome_code IN ('accepted', 'invalid_cell', 'invalid_participant', 'participant_already_scratched', 'cell_already_scratched')
+                ),
+                claim_result TEXT NULL CHECK (claim_result IS NULL OR claim_result IN ('empty', 'consolation', 'jackpot')),
+                awarded_prize_type TEXT NULL CHECK (awarded_prize_type IS NULL OR awarded_prize_type IN ('jackpot', 'consolation')),
+                occurred_utc TIMESTAMPTZ NOT NULL
+            );
+
             INSERT INTO schema_versions (version, description, applied_utc)
             VALUES (1, 'bootstrap game schema', NOW())
             ON CONFLICT (version) DO NOTHING;
