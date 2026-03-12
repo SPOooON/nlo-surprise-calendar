@@ -64,17 +64,7 @@ main {
 
 .content {
     padding: 1.5rem;
-}
-
-.content-frame {
     width: 100%;
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 1.5rem;
-    border: 2px solid #d1d5db;
-    border-radius: 1rem;
-    background: #ffffff;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 .nav-brand-wrap {
@@ -457,10 +447,6 @@ main {
         padding: 1rem 1.25rem;
     }
 
-    .content-frame {
-        padding: 1rem;
-        border-width: 1px;
-    }
 }
 
 @media (min-width: 900px) {
