@@ -10,6 +10,8 @@ This file is the candidate-facing summary of how AI support was used and which d
 
 I explicitly chose not to spend assignment time on real authentication. The stronger signal in this case is correctness under concurrency, persistent state, and clear trade-off documentation.
 
+I also chose to log failed scratch attempts with explicit reason codes. For a lottery context, being able to explain rejected actions is worth the extra persistence work.
+
 ### What AI was used for
 
 - turning the assignment text into explicit mandatory scope versus optional scope
@@ -26,6 +28,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - Use PostgreSQL as the persistence boundary and Docker Compose for a reproducible local setup.
 - Use straight SQL with `Npgsql` instead of Entity Framework for persistence.
 - Rely on database constraints plus transactions for concurrency-sensitive rules instead of in-memory locking.
+- Record both accepted and rejected scratch attempts in an audit-friendly way, while keeping successful claims as the authoritative invariant table.
 - Use a self-declared participant identifier instead of full authentication.
 - Keep the backlog small and coherent: bootstrap, persistence, scratch flow/API, UI, tests, and documentation/polish.
 - Cache the participant identifier locally for convenience and provide a visible clear-identity or log-out action.
@@ -38,6 +41,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - Straight SQL keeps schema, constraints, initialization, and transactional behavior explicit, which is more valuable here than ORM convenience.
 - Blazor is sufficient for a minimal UI while keeping implementation effort focused on the backend.
 - Concurrency correctness is the highest-risk part of the assignment, so it deserves the strongest design and testing focus.
+- In a lottery context, storing failed attempts and their reasons improves explainability when users dispute outcomes.
 - Full authentication would consume time without materially improving the core assignment proof points.
 - Caching the identifier improves the demo flow, while a clear local sign-out keeps the simplification honest and understandable.
 
@@ -46,6 +50,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - Seed prize allocation up front rather than calculating winners during scratch requests.
 - Do not pre-store all 10,000 non-winning cells if the model can derive "empty" cells safely from the configured grid size plus stored prize/scratch state.
 - Keep persistence explicit with hand-written SQL instead of adding EF abstraction during the assignment timebox.
+- Keep successful claims authoritative, but add append-only audit records for rejected attempts too.
 - Start with a simple user identifier approach instead of full authentication.
 - Cache that identifier in the browser for convenience and provide a visible way to clear it.
 - Keep Docker Compose as the primary documented local run path.
