@@ -27,6 +27,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - Use a self-declared participant identifier instead of full authentication.
 - Keep the backlog small and coherent: bootstrap, persistence, scratch flow/API, UI, tests, and documentation/polish.
 - Cache the participant identifier locally for convenience and provide a visible clear-identity or log-out action.
+- Use milestones to separate mandatory assignment scope from optional stretch work, instead of carrying a separate priority-label system.
 
 ### Why those decisions fit the assignment
 
@@ -50,6 +51,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - I made scope cuts intentionally instead of accidentally omitting work.
 - I used AI to pressure-test trade-offs and backlog shape, not to avoid design responsibility.
 - I kept the design honest by documenting where the solution is intentionally simplified.
+- I kept the GitHub tracker aligned with the actual scope split: mandatory work versus optional showcase work.
 
 ## Supporting detail
 
