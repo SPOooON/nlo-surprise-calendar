@@ -3,6 +3,7 @@ using NloSurpriseCalendar.App.Components;
 using NloSurpriseCalendar.App.Infrastructure;
 using NloSurpriseCalendar.App.Persistence;
 using NloSurpriseCalendar.App.Persistence.Models;
+using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient();
+builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -49,6 +51,8 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = check => check.Tags.Contains("ready"),
 });
+app.MapOpenApi("/openapi/{documentName}.json");
+app.MapScalarApiReference("/docs", options => options.WithTitle("NLO Surprise Calendar API"));
 app.MapGet("/api/bootstrap/default-game", async (GameSummaryReadService readService, CancellationToken cancellationToken) =>
 {
     var summary = await readService.GetDefaultGameSummaryAsync(cancellationToken);

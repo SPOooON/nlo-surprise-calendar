@@ -39,6 +39,7 @@ I also kept tightening the demo based on what was actually visible while using i
 - Keep the UI intentionally small: a row/column picker, cached identifier, log-out action, and clear result messaging instead of a bigger frontend build-out.
 - Split broad optional backlog items into specific GitHub issues once the mandatory scope is done, so stretch work stays reviewable and easy to prioritize.
 - Remove optional backlog items again when they are only plumbing and do not stand on their own as useful reviewer-facing scope.
+- For the API docs stretch goal, use built-in ASP.NET Core OpenAPI generation plus Scalar instead of Swagger-specific tooling.
 
 ### Why those decisions fit the assignment
 
@@ -54,6 +55,7 @@ I also kept tightening the demo based on what was actually visible while using i
 - A compact Blazor UI is enough to demonstrate the end-to-end flow without spending assignment time on a production-style calendar frontend.
 - Once the mandatory scope is complete, the best next extras are the ones that improve reviewer visibility with the least architectural churn.
 - That same rule also means dropping optional issues that are better folded into a stronger parent feature instead of preserving them as standalone backlog noise.
+- Built-in OpenAPI plus a homepage-linked docs UI improves reviewer visibility with low implementation risk and better matches modern .NET direction than adding Swagger.
 
 ### Notes for implementation
 
@@ -71,6 +73,8 @@ I also kept tightening the demo based on what was actually visible while using i
 - Use Testcontainers for the database-backed tests so the suite validates the actual PostgreSQL constraint behavior without depending on a manually prepared local database.
 - Keep `docs/DESIGN.md` intentionally concise and within roughly two pages.
 - Keep `README.md` for setup and keep all other product/technical notes under `docs/`.
+- Prefer optional work in this order: reviewer visibility first, then inspectability, then bigger architectural expansion.
+- If interactive API docs are added, make them reachable from the homepage instead of leaving them as an undocumented route.
 - Prefer optional work in this order: reviewer visibility first, then inspectability, then bigger architectural expansion.
 
 ### What I want a reviewer to see

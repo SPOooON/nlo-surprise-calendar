@@ -13,6 +13,8 @@ docker compose up --build
 Application URLs:
 
 - App: `http://localhost:8080`
+- API docs UI: `http://localhost:8080/docs`
+- OpenAPI JSON: `http://localhost:8080/openapi/v1.json`
 - Live health: `http://localhost:8080/health/live`
 - Readiness health: `http://localhost:8080/health/ready`
 - Default game summary: `http://localhost:8080/api/bootstrap/default-game`
@@ -25,6 +27,7 @@ UI flow:
 - clear it again via the visible `Log out` action
 - choose a row and column, then submit a scratch request
 - inspect the result panel for win, loss, duplicate-user, or duplicate-cell outcomes
+- open the API docs directly from the homepage when you want to inspect or exercise the endpoints
 
 To stop the stack:
 
