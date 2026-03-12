@@ -1,0 +1,69 @@
+# Design Notes
+
+## Status
+
+Bootstrap planning document. This file captures the initial design direction and constraints before implementation starts.
+
+## Assignment goals
+
+Build a backend-first surprise calendar that is correct under concurrency, persists state across restarts, and includes a minimal UI.
+
+## Proposed technical shape
+
+- Single ASP.NET Core solution.
+- Minimal API or controller endpoints for scratch operations and read models.
+- Blazor-based UI hosted in the same application.
+- PostgreSQL as the system of record.
+- Docker Compose for local orchestration.
+
+## Core domain constraints
+
+- Calendar contains exactly 10,000 cells.
+- Exactly 1 jackpot prize exists.
+- Exactly 100 consolation prizes exist.
+- Each user may scratch exactly one cell.
+- Each cell may be scratched exactly once.
+
+## Persistence direction
+
+- Initialize calendar state and prize allocation in PostgreSQL.
+- Use database constraints to protect uniqueness rules.
+- Keep scratch operations transactional.
+- Persist enough data to reconstruct current state after restart without relying on in-memory caches.
+
+## Concurrency direction
+
+- Treat the database as the final authority for conflicting writes.
+- Favor transactional scratch handling over in-process locking.
+- Design acceptance tests around conflict scenarios, not only the happy path.
+
+## UI direction
+
+- Keep the Blazor UI minimal and functional.
+- Support entering a self-declared user identifier, selecting a cell, and showing the result.
+- Cache the identifier client-side for convenience and provide a clear "log out" or "clear identity" action that removes it from local storage.
+- Avoid UI work that does not improve the demonstration of correctness.
+
+## Identity approach
+
+- Do not implement full authentication in the MVP.
+- Treat the submitted user identifier as the participant key enforced by the backend.
+- Make it explicit in the UI and docs that this is a demo-time simplification, not secure identity verification.
+- Optimize for clarity and low implementation cost rather than pretending weak authentication is real security.
+
+## Timebox trade-offs
+
+Prioritize:
+
+- correctness
+- explainability
+- persistence
+- concurrency safety
+- clear docs
+
+De-prioritize unless time remains:
+
+- visual polish
+- advanced observability
+- CI/CD
+- deployment automation

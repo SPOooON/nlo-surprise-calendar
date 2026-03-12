@@ -1,0 +1,16 @@
+# Build outputs
+bin/
+obj/
+
+# Local .NET CLI state
+.dotnet/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS files
+Thumbs.db
+.DS_Store
