@@ -1,79 +1,57 @@
 # Design Notes
 
-## Status
+## Goal
 
-Bootstrap planning document. This file captures the initial design direction and constraints before implementation starts.
+Build a backend-first surprise calendar that stays correct under concurrency, persists state across restarts, and includes a minimal but usable web UI.
 
-## Assignment goals
+## Core rules
 
-Build a backend-first surprise calendar that is correct under concurrency, persists state across restarts, and includes a minimal UI.
+- The board has 10,000 cells.
+- There is exactly 1 jackpot prize.
+- There are exactly 100 consolation prizes.
+- A participant may scratch exactly 1 cell.
+- A cell may be scratched exactly 1 time.
 
-## Proposed technical shape
+## Technical shape
 
 - Single ASP.NET Core solution.
-- Minimal API or controller endpoints for scratch operations and read models.
-- Blazor-based UI hosted in the same application.
+- Blazor UI hosted in the same app.
+- Minimal HTTP endpoints for summary, scratch, audit, docs, and grid state.
 - PostgreSQL as the system of record.
-- Docker Compose for local orchestration.
+- Docker Compose for the standard local run path.
 
-## Core domain constraints
+## Persistence and concurrency
 
-- Calendar contains exactly 10,000 cells.
-- Exactly 1 jackpot prize exists.
-- Exactly 100 consolation prizes exist.
-- Each user may scratch exactly one cell.
-- Each cell may be scratched exactly once.
+- Straight SQL via `Npgsql`, not Entity Framework.
+- Startup-managed schema initialization for the MVP.
+- Prize allocation is seeded up front.
+- Empty cells are derived from board dimensions plus stored winning and scratched positions.
+- The scratch flow is transactional.
+- Database constraints enforce one scratch per participant and one scratch per cell.
+- Successful claims are authoritative.
+- Accepted and rejected attempts are also written to an append-only audit trail.
 
-## Persistence direction
+## UI scope
 
-- Initialize calendar state and prize allocation in PostgreSQL.
-- Use straight SQL via `Npgsql`, not Entity Framework, so schema rules, initialization, and transaction boundaries stay explicit.
-- Use startup-managed SQL initialization recorded in a `schema_versions` table as the migration strategy for the MVP.
-- Avoid storing all 10,000 non-winning cells if the system can derive empty cells safely from game dimensions plus stored winning/scratched positions.
-- Use database constraints to protect uniqueness rules.
-- Prefer short transactional writes plus uniqueness constraints for scratch operations rather than optimistic retries as the primary correctness mechanism.
-- Keep scratch operations transactional.
-- Persist enough data to reconstruct current state after restart without relying on in-memory caches.
-- Keep auditability explicit: prize allocation and scratch outcomes should be explainable from persisted records in the database.
-- Separate authoritative scratch claims from append-only attempt-event auditing so rejected requests can be explained without weakening core invariants.
-- Leave room in the model for future multi-game support, but keep that feature out of the MVP.
+- Self-declared participant identifier instead of full authentication.
+- Client-side identifier cache plus explicit local log out.
+- Homepage grid with click-to-select and explicit confirm.
+- Only scratched cells reveal outcomes; hidden prize positions are not leaked.
+- Audit page for reviewer-facing inspectability.
 
-## Concurrency direction
+## Timebox choices
 
-- Treat the database as the final authority for conflicting writes.
-- Favor transactional scratch handling over in-process locking.
-- Design acceptance tests around conflict scenarios, not only the happy path.
-
-## UI direction
-
-- Keep the Blazor UI minimal and functional.
-- Support entering a self-declared user identifier, selecting a cell, and showing the result.
-- Use a homepage grid with click-to-select plus explicit confirm, rather than one-click scratching.
-- Keep the board read model limited to scratched cells so hidden prize positions are not leaked.
-- Cache the identifier client-side for convenience and provide a clear "log out" or "clear identity" action that removes it from local storage.
-- Avoid UI work that does not improve the demonstration of correctness.
-- Prefer reviewer-facing inspectability work, such as an audit log view, before larger optional UI expansions.
-
-## Identity approach
-
-- Do not implement full authentication in the MVP.
-- Treat the submitted user identifier as the participant key enforced by the backend.
-- Make it explicit in the UI and docs that this is a demo-time simplification, not secure identity verification.
-- Optimize for clarity and low implementation cost rather than pretending weak authentication is real security.
-
-## Timebox trade-offs
-
-Prioritize:
+Prioritized:
 
 - correctness
-- explainability
 - persistence
+- explainability
 - concurrency safety
 - clear docs
 
-De-prioritize unless time remains:
+Explicitly de-prioritized:
 
-- visual polish
-- advanced observability
-- CI/CD
-- deployment automation
+- real authentication
+- visual polish beyond readability
+- production infrastructure
+- larger multi-game expansion
