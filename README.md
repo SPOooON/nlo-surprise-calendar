@@ -18,6 +18,14 @@ Application URLs:
 - Default game summary: `http://localhost:8080/api/bootstrap/default-game`
 - Scratch endpoint: `POST http://localhost:8080/api/games/default-game/scratch`
 
+UI flow:
+
+- enter a self-declared participant identifier
+- optionally cache it locally in the browser
+- clear it again via the visible `Log out` action
+- choose a row and column, then submit a scratch request
+- inspect the result panel for win, loss, duplicate-user, or duplicate-cell outcomes
+
 To stop the stack:
 
 ```bash

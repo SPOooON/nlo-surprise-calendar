@@ -1,17 +1,313 @@
-﻿@page "/"
+@page "/"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
 
-<PageTitle>Bootstrap Status</PageTitle>
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using NloSurpriseCalendar.App.Persistence.Models
 
-<h1>Surprise Calendar Bootstrap</h1>
+<PageTitle>Surprise Calendar</PageTitle>
 
-<p>This slice bootstraps the application host, Docker Compose setup, PostgreSQL connectivity, and readiness endpoints.</p>
+<div class="home-shell">
+    <section class="hero-panel">
+        <p class="eyebrow">Nederlandse Loterij case assignment</p>
+        <h1>Minimal surprise calendar demo</h1>
+        <p class="hero-copy">
+            This UI keeps the scope honest: a self-declared participant identifier, one cell selection, and a direct view of the API result.
+        </p>
+        <div class="hero-meta">
+            <span>Local identity cache only</span>
+            <span>Transactional scratch API</span>
+            <span>PostgreSQL-backed state</span>
+        </div>
+    </section>
 
-<ul>
-    <li>Application host: ASP.NET Core Blazor Web App</li>
-    <li>Primary local run path: <code>docker compose up --build</code></li>
-    <li>Readiness endpoint: <code>/health/ready</code></li>
-    <li>Live endpoint: <code>/health/live</code></li>
-    <li>Bootstrap summary endpoint: <code>/api/bootstrap/default-game</code></li>
-</ul>
+    <div class="workspace-grid">
+        <section class="panel">
+            <header class="panel-header">
+                <div>
+                    <p class="section-kicker">Participant</p>
+                    <h2>Identity</h2>
+                </div>
+                <button class="secondary-action" @onclick="ClearIdentityAsync" disabled="@string.IsNullOrWhiteSpace(ParticipantId)">
+                    Log out
+                </button>
+            </header>
 
-<p>The scratch flow is intentionally not implemented in this issue, but the PostgreSQL schema and deterministic prize initialization are.</p>
+            <p class="panel-copy">
+                This is a demo-time identifier only. It is cached in this browser for convenience and can be cleared locally at any time.
+            </p>
+
+            <div class="field-stack">
+                <label class="field-label" for="participant-id">Participant identifier</label>
+                <input id="participant-id"
+                       class="text-field"
+                       @bind="ParticipantId"
+                       @bind:event="oninput"
+                       placeholder="for example jaap@example.test" />
+            </div>
+
+            <div class="action-row">
+                <button class="secondary-action" @onclick="SaveIdentityAsync" disabled="@string.IsNullOrWhiteSpace(ParticipantId)">
+                    Remember on this browser
+                </button>
+                @if (IdentityStatusMessage is not null)
+                {
+                    <span class="inline-message">@IdentityStatusMessage</span>
+                }
+            </div>
+        </section>
+
+        <section class="panel">
+            <header class="panel-header">
+                <div>
+                    <p class="section-kicker">Game</p>
+                    <h2>Cell selection</h2>
+                </div>
+            </header>
+
+            @if (IsLoading)
+            {
+                <p class="panel-copy">Loading bootstrap summary...</p>
+            }
+            else if (LoadErrorMessage is not null)
+            {
+                <div class="status-card status-error">
+                    <strong>Summary unavailable</strong>
+                    <p>@LoadErrorMessage</p>
+                </div>
+            }
+            else if (Summary is not null)
+            {
+                <div class="summary-grid">
+                    <div>
+                        <span class="summary-label">Grid</span>
+                        <strong>@Summary.Width x @Summary.Height</strong>
+                    </div>
+                    <div>
+                        <span class="summary-label">Prizes</span>
+                        <strong>@(Summary.JackpotPrizeCount + Summary.ConsolationPrizeCount)</strong>
+                    </div>
+                    <div>
+                        <span class="summary-label">Claims so far</span>
+                        <strong>@Summary.ScratchClaimCount</strong>
+                    </div>
+                </div>
+
+                <div class="picker-grid">
+                    <div class="field-stack">
+                        <label class="field-label" for="selected-row">Row</label>
+                        <input id="selected-row"
+                               class="text-field"
+                               type="number"
+                               min="1"
+                               max="@Summary.Height"
+                               @bind="SelectedRow" />
+                    </div>
+                    <div class="field-stack">
+                        <label class="field-label" for="selected-column">Column</label>
+                        <input id="selected-column"
+                               class="text-field"
+                               type="number"
+                               min="1"
+                               max="@Summary.Width"
+                               @bind="SelectedColumn" />
+                    </div>
+                </div>
+
+                <div class="selection-preview">
+                    <span class="selection-label">Selected cell</span>
+                    <strong>Row @NormalizedRow, column @NormalizedColumn</strong>
+                    <span>Cell index @SelectedCellIndex</span>
+                </div>
+
+                <button class="primary-action"
+                        @onclick="ScratchAsync"
+                        disabled="@(!CanSubmitScratch)">
+                    @(IsSubmitting ? "Submitting..." : "Scratch selected cell")
+                </button>
+            }
+        </section>
+    </div>
+
+    @if (ResultState is not null)
+    {
+        <section class="panel result-panel">
+            <header class="panel-header">
+                <div>
+                    <p class="section-kicker">Result</p>
+                    <h2>@ResultState.Heading</h2>
+                </div>
+                <span class="@($"result-badge {ResultState.BadgeClass}")">@ResultState.BadgeText</span>
+            </header>
+
+            <p class="panel-copy">@ResultState.Message</p>
+
+            <div class="result-meta">
+                <span>Attempt ID @LastResult!.AttemptId</span>
+                <span>Outcome @LastResult.Outcome</span>
+                <span>Claim code @LastResult.ClaimResult</span>
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() },
+    };
+
+    private GameSummary? Summary;
+    private ScratchResult? LastResult;
+    private string ParticipantId { get; set; } = string.Empty;
+    private string? IdentityStatusMessage { get; set; }
+    private string? LoadErrorMessage { get; set; }
+    private int SelectedRow { get; set; } = 1;
+    private int SelectedColumn { get; set; } = 1;
+    private bool IsLoading { get; set; } = true;
+    private bool IsSubmitting { get; set; }
+    private bool _initialized;
+
+    private UiResultState? ResultState => LastResult is null ? null : BuildResultState(LastResult);
+
+    private int NormalizedRow => Summary is null
+        ? 1
+        : Math.Clamp(SelectedRow, 1, Summary.Height);
+
+    private int NormalizedColumn => Summary is null
+        ? 1
+        : Math.Clamp(SelectedColumn, 1, Summary.Width);
+
+    private int SelectedCellIndex => Summary is null
+        ? 0
+        : ((NormalizedRow - 1) * Summary.Width) + (NormalizedColumn - 1);
+
+    private bool CanSubmitScratch =>
+        !IsSubmitting &&
+        Summary is not null &&
+        !string.IsNullOrWhiteSpace(ParticipantId);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _initialized)
+        {
+            return;
+        }
+
+        _initialized = true;
+        ParticipantId = await JsRuntime.InvokeAsync<string?>("nloIdentityStorage.get") ?? string.Empty;
+        await LoadSummaryAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSummaryAsync()
+    {
+        try
+        {
+            using var client = CreateClient();
+            Summary = await client.GetFromJsonAsync<GameSummary>("/api/bootstrap/default-game", JsonOptions);
+            LoadErrorMessage = Summary is null ? "The bootstrap game endpoint returned no summary." : null;
+        }
+        catch (Exception exception)
+        {
+            LoadErrorMessage = $"Failed to load the bootstrap summary: {exception.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task SaveIdentityAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ParticipantId))
+        {
+            return;
+        }
+
+        await JsRuntime.InvokeVoidAsync("nloIdentityStorage.set", ParticipantId.Trim());
+        ParticipantId = ParticipantId.Trim();
+        IdentityStatusMessage = "Stored locally in this browser.";
+    }
+
+    private async Task ClearIdentityAsync()
+    {
+        await JsRuntime.InvokeVoidAsync("nloIdentityStorage.clear");
+        ParticipantId = string.Empty;
+        IdentityStatusMessage = "Local identity cache cleared.";
+    }
+
+    private async Task ScratchAsync()
+    {
+        if (!CanSubmitScratch || Summary is null)
+        {
+            return;
+        }
+
+        IsSubmitting = true;
+        IdentityStatusMessage = null;
+
+        try
+        {
+            var request = new ScratchRequest(ParticipantId.Trim(), SelectedCellIndex);
+            using var client = CreateClient();
+            var response = await client.PostAsJsonAsync("/api/games/default-game/scratch", request);
+            LastResult = await response.Content.ReadFromJsonAsync<ScratchResult>(JsonOptions);
+
+            if (LastResult is null)
+            {
+                LoadErrorMessage = "The scratch endpoint returned an empty response.";
+                return;
+            }
+
+            await JsRuntime.InvokeVoidAsync("nloIdentityStorage.set", request.ParticipantId);
+            ParticipantId = request.ParticipantId;
+            IdentityStatusMessage = "Stored locally in this browser.";
+
+            if (response.IsSuccessStatusCode && Summary is not null)
+            {
+                Summary = Summary with { ScratchClaimCount = Summary.ScratchClaimCount + 1 };
+            }
+        }
+        catch (Exception exception)
+        {
+            LoadErrorMessage = $"Failed to submit scratch request: {exception.Message}";
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+
+    private HttpClient CreateClient()
+    {
+        var client = HttpClientFactory.CreateClient();
+        client.BaseAddress = new Uri(NavigationManager.BaseUri);
+        return client;
+    }
+
+    private static UiResultState BuildResultState(ScratchResult result) => result.Outcome switch
+    {
+        ScratchAttemptOutcome.Accepted when string.Equals(result.ClaimResult, "jackpot", StringComparison.Ordinal) =>
+            new UiResultState("Jackpot hit", "Win", "badge-win", "The selected cell contains the jackpot prize."),
+        ScratchAttemptOutcome.Accepted when string.Equals(result.ClaimResult, "consolation", StringComparison.Ordinal) =>
+            new UiResultState("Consolation prize", "Win", "badge-win", "The selected cell contains a consolation prize."),
+        ScratchAttemptOutcome.Accepted =>
+            new UiResultState("No prize on this cell", "Loss", "badge-empty", "The claim was accepted, but this cell is empty."),
+        ScratchAttemptOutcome.ParticipantAlreadyScratched =>
+            new UiResultState("Participant already used", "Conflict", "badge-conflict", "This participant identifier already scratched a cell."),
+        ScratchAttemptOutcome.CellAlreadyScratched =>
+            new UiResultState("Cell already taken", "Conflict", "badge-conflict", "Another participant already claimed this cell."),
+        ScratchAttemptOutcome.InvalidParticipant =>
+            new UiResultState("Identifier missing", "Invalid", "badge-invalid", "Enter a non-empty participant identifier before scratching."),
+        ScratchAttemptOutcome.InvalidCell =>
+            new UiResultState("Cell outside the board", "Invalid", "badge-invalid", "Choose a row and column inside the configured game grid."),
+        _ =>
+            new UiResultState("Unexpected result", "Error", "badge-invalid", "The API returned an unexpected outcome.")
+    };
+
+    private sealed record UiResultState(string Heading, string BadgeText, string BadgeClass, string Message);
+}

@@ -12,6 +12,8 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 
 I also chose to log failed scratch attempts with explicit reason codes. For a lottery context, being able to explain rejected actions is worth the extra persistence work.
 
+I also kept tightening the demo based on what was actually visible while using it, instead of treating the first pass as finished. That included noticing when the page framing was too subtle and pushing for clearer presentation without expanding the core scope.
+
 ### What AI was used for
 
 - turning the assignment text into explicit mandatory scope versus optional scope
@@ -34,6 +36,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Cache the participant identifier locally for convenience and provide a visible clear-identity or log-out action.
 - Use milestones to separate mandatory assignment scope from optional stretch work, instead of carrying a separate priority-label system.
 - Use xUnit plus Testcontainers-backed PostgreSQL integration tests instead of relying on fake repositories or in-memory database substitutes.
+- Keep the UI intentionally small: a row/column picker, cached identifier, log-out action, and clear result messaging instead of a bigger frontend build-out.
 
 ### Why those decisions fit the assignment
 
@@ -46,6 +49,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Real PostgreSQL-backed tests are more credible here because the important invariants are enforced by database constraints and transactions.
 - Full authentication would consume time without materially improving the core assignment proof points.
 - Caching the identifier improves the demo flow, while a clear local sign-out keeps the simplification honest and understandable.
+- A compact Blazor UI is enough to demonstrate the end-to-end flow without spending assignment time on a production-style calendar frontend.
 
 ### Notes for implementation
 
@@ -55,6 +59,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Keep successful claims authoritative, but add append-only audit records for rejected attempts too.
 - Start with a simple user identifier approach instead of full authentication.
 - Cache that identifier in the browser for convenience and provide a visible way to clear it.
+- Keep the MVP UI to a row/column selector plus result panel rather than rendering all 10,000 cells.
 - Keep Docker Compose as the primary documented local run path.
 - Keep future multi-game support in mind in the persistence model, but track it as separate work.
 - Preserve an audit-friendly data trail for prize allocation and scratch events.
