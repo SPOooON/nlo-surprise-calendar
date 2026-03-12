@@ -57,6 +57,14 @@ GitHub Actions mirrors the same restore, build, and test flow on pull requests t
 
 The repo includes both implementation docs and the GitHub working trail. Reviewers can inspect issues, PRs, and PR comments if they want the decision history behind the code.
 
+## Postmortem
+
+- Total time was about 4 hours, including a lunch break.
+- The strongest part of the assignment is the backend correctness story: transactional scratch handling, PostgreSQL constraints, audit logging, and database-backed tests.
+- Keeping the UI and identity model intentionally simple helped keep the timebox focused on the real risks.
+- Reviewer-facing extras like the audit view, OpenAPI docs, homepage grid, and CI were worth doing because they improved inspectability without changing the core design.
+- `#12` multi-game support was left out on purpose. It is a valid next step, but too large for this assignment window without weakening the core implementation.
+
 ## Docs
 
 - [Design notes](docs/DESIGN.md)
