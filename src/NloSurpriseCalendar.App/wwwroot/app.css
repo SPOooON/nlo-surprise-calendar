@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     min-height: 100%;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #1f2933;
+    color: #1f2937;
     background: #f3f4f6;
 }
 
@@ -38,11 +38,11 @@ main {
 
 .sidebar {
     background: #ffffff;
-    border-right: 1px solid #d2d6dc;
+    border-right: 1px solid #d1d5db;
 }
 
 .top-row {
-    border-bottom: 1px solid #d2d6dc;
+    border-bottom: 1px solid #d1d5db;
     background: #ffffff;
 }
 
@@ -53,7 +53,7 @@ main {
     justify-content: space-between;
     gap: 1rem;
     padding: 0 1.5rem;
-    color: #4b5563;
+    color: #374151;
 }
 
 .top-row-copy a {
@@ -71,10 +71,10 @@ main {
     max-width: 72rem;
     margin: 0 auto;
     padding: 1.5rem;
-    border: 1px solid #d2d6dc;
-    border-radius: 1.5rem;
+    border: 2px solid #d1d5db;
+    border-radius: 1rem;
     background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 .nav-brand-wrap {
@@ -104,7 +104,7 @@ main {
 
 .nav-item .nav-link {
     display: block;
-    border-radius: 0.9rem;
+    border-radius: 0.75rem;
     padding: 0.85rem 1rem;
     background: #f3f4f6;
     color: #111827;
@@ -113,8 +113,8 @@ main {
 }
 
 .nav-item .nav-link.active {
-    background: #e5e7eb;
-    color: #111827;
+    background: #111827;
+    color: #ffffff;
 }
 
 .nav-meta {
@@ -129,21 +129,26 @@ main {
     color: #111827;
 }
 
-.home-shell {
+.home-shell,
+.audit-shell {
     display: grid;
     gap: 1.5rem;
 }
 
 .hero-panel,
 .panel {
-    border: 1px solid #d2d6dc;
-    border-radius: 1.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 1rem;
     background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 .hero-panel {
     padding: 2rem;
+}
+
+.panel {
+    padding: 1.5rem;
 }
 
 .eyebrow,
@@ -158,6 +163,7 @@ main {
 }
 
 .hero-panel h1,
+.panel h1,
 .panel h2 {
     margin: 0.25rem 0 0;
     color: #111827;
@@ -174,8 +180,7 @@ main {
 .summary-grid,
 .picker-grid,
 .result-meta,
-.action-row,
-.hero-actions {
+.action-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -184,6 +189,12 @@ main {
 .hero-meta,
 .hero-actions {
     margin-top: 1.25rem;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .hero-meta span,
@@ -199,26 +210,17 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.8rem 1.1rem;
     border-radius: 999px;
+    padding: 0.75rem 1rem;
     background: #111827;
     color: #ffffff;
-    text-decoration: none;
     font-weight: 600;
-}
-
-.hero-link-secondary {
-    background: #f3f4f6;
-    color: #111827;
+    text-decoration: none;
 }
 
 .workspace-grid {
     display: grid;
     gap: 1.5rem;
-}
-
-.panel {
-    padding: 1.5rem;
 }
 
 .panel-header {
@@ -236,13 +238,13 @@ main {
 
 .field-label {
     font-weight: 600;
-    color: #1f2933;
+    color: #111827;
 }
 
 .text-field {
     width: 100%;
     border: 1px solid #cbd5e1;
-    border-radius: 0.9rem;
+    border-radius: 0.75rem;
     padding: 0.8rem 0.95rem;
     background: #ffffff;
     color: #111827;
@@ -290,7 +292,7 @@ main {
 .selection-preview {
     min-width: 10rem;
     padding: 0.9rem 1rem;
-    border-radius: 1rem;
+    border-radius: 0.85rem;
     background: #f9fafb;
     display: grid;
     gap: 0.2rem;
@@ -316,17 +318,13 @@ main {
 
 .status-card {
     margin-top: 1rem;
-    border-radius: 1rem;
+    border-radius: 0.85rem;
     padding: 1rem;
 }
 
 .status-error {
     background: #fef2f2;
     color: #991b1b;
-}
-
-.result-panel {
-    background: #ffffff;
 }
 
 .result-badge {
@@ -353,6 +351,40 @@ main {
 .badge-invalid {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.audit-table-wrap {
+    margin-top: 1.25rem;
+    overflow-x: auto;
+}
+
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 48rem;
+}
+
+.audit-table th,
+.audit-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+.audit-table th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+}
+
+.audit-table tbody tr:nth-child(odd) {
+    background: #f9fafb;
+}
+
+.audit-empty {
+    color: #4b5563;
 }
 
 @media (max-width: 700px) {

@@ -12,6 +12,7 @@ public sealed class HomePageShellTests(PostgresContainerFixture postgresFixture)
     public async Task InitializeAsync()
     {
         _client = _factory.CreateClient();
+        await _client.GetAsync("/health/live");
         await _factory.ResetStateAsync();
     }
 
@@ -23,26 +24,25 @@ public sealed class HomePageShellTests(PostgresContainerFixture postgresFixture)
     }
 
     [Fact]
-    public async Task HomePage_IncludesShellMarkup_AndGlobalStyles()
+    public async Task HomePage_Ships_GlobalShellCss_ForVisibleLayoutClasses()
     {
         var homeResponse = await _client.GetAsync("/");
-        var homeHtml = await homeResponse.Content.ReadAsStringAsync();
-
         var cssResponse = await _client.GetAsync("/app.css");
+        var homeHtml = await homeResponse.Content.ReadAsStringAsync();
         var css = await cssResponse.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, homeResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, cssResponse.StatusCode);
+        Assert.Contains("class=\"page\"", homeHtml);
+        Assert.Contains("class=\"sidebar\"", homeHtml);
+        Assert.Contains("class=\"content-frame\"", homeHtml);
+        Assert.Contains("class=\"nav-subtitle\"", homeHtml);
+        Assert.Contains("class=\"home-shell\"", homeHtml);
 
-        Assert.Contains("class=\"page\"", homeHtml, StringComparison.Ordinal);
-        Assert.Contains("class=\"sidebar\"", homeHtml, StringComparison.Ordinal);
-        Assert.Contains("class=\"content-frame\"", homeHtml, StringComparison.Ordinal);
-        Assert.Contains("class=\"nav-subtitle\"", homeHtml, StringComparison.Ordinal);
-
-        Assert.Contains(".page {", css, StringComparison.Ordinal);
-        Assert.Contains(".sidebar {", css, StringComparison.Ordinal);
-        Assert.Contains(".content-frame {", css, StringComparison.Ordinal);
-        Assert.Contains(".nav-item .nav-link {", css, StringComparison.Ordinal);
-        Assert.Contains(".home-shell {", css, StringComparison.Ordinal);
+        Assert.Contains(".page {", css);
+        Assert.Contains(".sidebar {", css);
+        Assert.Contains(".content-frame {", css);
+        Assert.Contains(".nav-item .nav-link {", css);
+        Assert.Contains(".home-shell", css);
     }
 }
