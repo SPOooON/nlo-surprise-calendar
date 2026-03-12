@@ -50,6 +50,8 @@ dotnet test -c Release
 
 The integration tests use Testcontainers to start an isolated PostgreSQL instance, so Docker must be available when running the test suite.
 
+A lightweight GitHub Actions workflow mirrors the same restore, build, and test sequence on pull requests to `main`.
+
 ## Review Trail
 
 The implementation process is tracked in GitHub issues, pull requests, and PR comments in addition to the repository docs. Reviewers can inspect that trail if they want to see the decision-making and review loop behind the code.
