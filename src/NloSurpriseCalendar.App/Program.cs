@@ -69,3 +69,5 @@ app.MapPost("/api/games/default-game/scratch", async (ScratchRequest request, Sc
 app.MapRazorComponents<App>();
 
 app.Run();
+
+public partial class Program;
