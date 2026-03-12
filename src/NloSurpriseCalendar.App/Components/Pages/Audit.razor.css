@@ -1,0 +1,43 @@
+.audit-shell {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.audit-shell h1 {
+    margin: 0.25rem 0 0;
+    color: #17342c;
+}
+
+.audit-table-wrap {
+    margin-top: 1.25rem;
+    overflow-x: auto;
+}
+
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 48rem;
+}
+
+.audit-table th,
+.audit-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #d7e0df;
+    vertical-align: top;
+}
+
+.audit-table th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5a6f67;
+}
+
+.audit-table tbody tr:nth-child(odd) {
+    background: #fbfcfb;
+}
+
+.audit-empty {
+    color: #48645b;
+}
