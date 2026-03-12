@@ -322,7 +322,6 @@ main {
 
 .calendar-grid-wrap {
     margin-top: 1rem;
-    overflow: auto;
     padding: 0.5rem;
     border: 1px solid #e5e7eb;
     border-radius: 0.85rem;
@@ -331,14 +330,14 @@ main {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(var(--grid-columns), 0.9rem);
-    gap: 0.15rem;
-    width: max-content;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: 0.1rem;
+    width: 100%;
 }
 
 .calendar-cell {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     padding: 0;
     border: 1px solid #d1d5db;
     border-radius: 0.2rem;
@@ -484,9 +483,5 @@ main {
 
     .content {
         padding: 2rem;
-    }
-
-    .workspace-grid {
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     }
 }
