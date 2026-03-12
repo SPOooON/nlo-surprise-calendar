@@ -17,6 +17,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - identifying early architecture choices that affect the whole solution
 - identifying concurrency risks and the tests needed to prove correctness
 - deciding where assignment documentation should live in the repository
+- pressure-testing persistence modeling choices before implementation starts
 
 ### Key decisions taken
 
@@ -41,9 +42,12 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 ### Notes for implementation
 
 - Seed prize allocation up front rather than calculating winners during scratch requests.
+- Do not pre-store all 10,000 non-winning cells if the model can derive "empty" cells safely from the configured grid size plus stored prize/scratch state.
 - Start with a simple user identifier approach instead of full authentication.
 - Cache that identifier in the browser for convenience and provide a visible way to clear it.
 - Keep Docker Compose as the primary documented local run path.
+- Keep future multi-game support in mind in the persistence model, but track it as separate work.
+- Preserve an audit-friendly data trail for prize allocation and scratch events.
 - Prioritize integration tests for same-cell and same-user contention.
 - Keep `docs/DESIGN.md` intentionally concise and within roughly two pages.
 - Keep `README.md` for setup and keep all other product/technical notes under `docs/`.
@@ -54,6 +58,7 @@ I explicitly chose not to spend assignment time on real authentication. The stro
 - I used AI to pressure-test trade-offs and backlog shape, not to avoid design responsibility.
 - I kept the design honest by documenting where the solution is intentionally simplified.
 - I kept the GitHub tracker aligned with the actual scope split: mandatory work versus optional showcase work.
+- I used GitHub issues, PRs, and PR comments as part of the working record, so reviewers can inspect both the code and the decision trail.
 
 ## Supporting detail
 

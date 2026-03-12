@@ -27,9 +27,14 @@ Build a backend-first surprise calendar that is correct under concurrency, persi
 ## Persistence direction
 
 - Initialize calendar state and prize allocation in PostgreSQL.
+- Use startup-managed SQL initialization recorded in a `schema_versions` table as the migration strategy for the MVP.
+- Avoid storing all 10,000 non-winning cells if the system can derive empty cells safely from game dimensions plus stored winning/scratched positions.
 - Use database constraints to protect uniqueness rules.
+- Prefer short transactional writes plus uniqueness constraints for scratch operations rather than optimistic retries as the primary correctness mechanism.
 - Keep scratch operations transactional.
 - Persist enough data to reconstruct current state after restart without relying on in-memory caches.
+- Keep auditability explicit: prize allocation and scratch outcomes should be explainable from persisted records in the database.
+- Leave room in the model for future multi-game support, but keep that feature out of the MVP.
 
 ## Concurrency direction
 
