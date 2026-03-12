@@ -18,6 +18,7 @@ After the mandatory scope was done, I prioritized reviewer visibility extras fir
 
 When adding the optional grid, I chose to put it on the homepage and keep it select-then-confirm instead of immediate scratch-on-click. That kept the UI more inspectable and reduced accidental actions during a demo.
 I also caught a CSS regression during the OpenAPI work instead of hand-waving it away, and I chose to simplify the site colors when readability suffered. That was the right trade-off for an assignment demo: plain and legible beats decorative styling.
+I kept the CI stretch goal intentionally small as well: just mirror the existing local restore, build, and test commands on pull requests instead of adding a more ambitious pipeline.
 
 ### What AI was used for
 
@@ -48,6 +49,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - Keep the optional grid driven by persisted backend state, but reveal only scratched cells so unclaimed prize positions stay hidden.
 - For the API docs stretch goal, use built-in ASP.NET Core OpenAPI generation plus Scalar instead of Swagger-specific tooling.
 - Add a lightweight regression test when a concrete UI integration issue is found, even if the assignment does not justify a full browser-test stack.
+- Keep CI aligned with the local validation commands instead of inventing a separate pipeline story.
 
 ### Why those decisions fit the assignment
 
@@ -67,6 +69,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - Built-in OpenAPI plus a homepage-linked docs UI improves reviewer visibility with low implementation risk and better matches modern .NET direction than adding Swagger.
 - When presentation gets in the way of clarity, simplify it. The assignment benefits more from readable UI than from visual styling.
 - A homepage grid is a stronger demo than row/column inputs, but select-then-confirm is still the safer interaction than one-click scratching.
+- A minimal CI workflow adds reviewer confidence without changing the local-first development model.
 
 ### Notes for implementation
 
@@ -88,6 +91,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - Keep optional reviewer views read-only and grounded in persisted data rather than building demo-only mock state.
 - If interactive API docs are added, make them reachable from the homepage instead of leaving them as an undocumented route.
 - If a grid is added, derive it from a backend board-state endpoint and avoid leaking unrevealed prize positions.
+- Keep CI to restore, build, and test unless there is a clear reason to add more pipeline complexity.
 
 ### What I want a reviewer to see
 
