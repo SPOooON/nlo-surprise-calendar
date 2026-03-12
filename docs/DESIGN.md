@@ -27,6 +27,7 @@ Build a backend-first surprise calendar that is correct under concurrency, persi
 ## Persistence direction
 
 - Initialize calendar state and prize allocation in PostgreSQL.
+- Use straight SQL via `Npgsql`, not Entity Framework, so schema rules, initialization, and transaction boundaries stay explicit.
 - Use startup-managed SQL initialization recorded in a `schema_versions` table as the migration strategy for the MVP.
 - Avoid storing all 10,000 non-winning cells if the system can derive empty cells safely from game dimensions plus stored winning/scratched positions.
 - Use database constraints to protect uniqueness rules.
