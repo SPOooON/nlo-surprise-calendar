@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: src/NloSurpriseCalendar.App/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=db;Port=5432;Database=nlo_surprise_calendar;Username=postgres;Password=postgres
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: nlo_surprise_calendar
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nlo_surprise_calendar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
