@@ -33,6 +33,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Keep the backlog small and coherent: bootstrap, persistence, scratch flow/API, UI, tests, and documentation/polish.
 - Cache the participant identifier locally for convenience and provide a visible clear-identity or log-out action.
 - Use milestones to separate mandatory assignment scope from optional stretch work, instead of carrying a separate priority-label system.
+- Use xUnit plus Testcontainers-backed PostgreSQL integration tests instead of relying on fake repositories or in-memory database substitutes.
 
 ### Why those decisions fit the assignment
 
@@ -42,6 +43,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Blazor is sufficient for a minimal UI while keeping implementation effort focused on the backend.
 - Concurrency correctness is the highest-risk part of the assignment, so it deserves the strongest design and testing focus.
 - In a lottery context, storing failed attempts and their reasons improves explainability when users dispute outcomes.
+- Real PostgreSQL-backed tests are more credible here because the important invariants are enforced by database constraints and transactions.
 - Full authentication would consume time without materially improving the core assignment proof points.
 - Caching the identifier improves the demo flow, while a clear local sign-out keeps the simplification honest and understandable.
 
@@ -57,6 +59,7 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 - Keep future multi-game support in mind in the persistence model, but track it as separate work.
 - Preserve an audit-friendly data trail for prize allocation and scratch events.
 - Prioritize integration tests for same-cell and same-user contention.
+- Use Testcontainers for the database-backed tests so the suite validates the actual PostgreSQL constraint behavior without depending on a manually prepared local database.
 - Keep `docs/DESIGN.md` intentionally concise and within roughly two pages.
 - Keep `README.md` for setup and keep all other product/technical notes under `docs/`.
 

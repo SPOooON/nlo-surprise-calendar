@@ -24,6 +24,16 @@ To stop the stack:
 docker compose down
 ```
 
+## Test
+
+Automated tests run from the repository root:
+
+```bash
+dotnet test -c Release
+```
+
+The integration tests use Testcontainers to start an isolated PostgreSQL instance, so Docker must be available when running the test suite.
+
 ## Review Trail
 
 The implementation process is tracked in GitHub issues, pull requests, and PR comments in addition to the repository docs. Reviewers can inspect that trail if they want to see the decision-making and review loop behind the code.
