@@ -35,14 +35,16 @@ public sealed class HomePageShellTests(PostgresContainerFixture postgresFixture)
         Assert.Equal(HttpStatusCode.OK, cssResponse.StatusCode);
         Assert.Contains("class=\"page\"", homeHtml);
         Assert.Contains("class=\"sidebar\"", homeHtml);
-        Assert.Contains("class=\"content-frame\"", homeHtml);
+        Assert.Contains("class=\"content\"", homeHtml);
         Assert.Contains("class=\"nav-subtitle\"", homeHtml);
         Assert.Contains("class=\"home-shell\"", homeHtml);
 
         Assert.Contains(".page {", css);
         Assert.Contains(".sidebar {", css);
-        Assert.Contains(".content-frame {", css);
+        Assert.Contains(".content {", css);
         Assert.Contains(".nav-item .nav-link {", css);
         Assert.Contains(".home-shell", css);
+        Assert.Contains(".calendar-grid {", css);
+        Assert.Contains(".calendar-cell {", css);
     }
 }

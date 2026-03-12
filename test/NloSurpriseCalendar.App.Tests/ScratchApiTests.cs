@@ -174,4 +174,21 @@ public sealed class ScratchApiTests(PostgresContainerFixture postgresFixture) : 
         Assert.Equal("accepted", auditLog.Attempts[1].OutcomeCode);
         Assert.True(auditLog.Attempts[0].AttemptId > auditLog.Attempts[1].AttemptId);
     }
+
+    [Fact]
+    public async Task GridStateEndpoint_Returns_ScratchedCells_Only()
+    {
+        await _client.PostAsJsonAsync("/api/games/default-game/scratch", new ScratchRequest("alpha", 42));
+        await _client.PostAsJsonAsync("/api/games/default-game/scratch", new ScratchRequest("beta", 50));
+
+        var boardState = await _client.GetFromJsonAsync<GameBoardState>("/api/games/default-game/grid-state", JsonOptions);
+
+        Assert.NotNull(boardState);
+        Assert.Equal("main", boardState.GameSlug);
+        Assert.Equal(100, boardState.Width);
+        Assert.Equal(100, boardState.Height);
+        Assert.Equal(2, boardState.ScratchClaimCount);
+        Assert.Equal(new[] { 42, 50 }, boardState.ScratchedCells.Select(cell => cell.CellIndex).ToArray());
+        Assert.All(boardState.ScratchedCells, cell => Assert.NotNull(cell.ClaimResult));
+    }
 }

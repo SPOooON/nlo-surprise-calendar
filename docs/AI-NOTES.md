@@ -15,6 +15,8 @@ I also chose to log failed scratch attempts with explicit reason codes. For a lo
 I also kept tightening the demo based on what was actually visible while using it, instead of treating the first pass as finished. That included noticing when the page framing was too subtle and pushing for clearer presentation without expanding the core scope.
 
 After the mandatory scope was done, I prioritized reviewer visibility extras first. That is why the first stretch UI is an audit log view over more decorative or broader product features.
+
+When adding the optional grid, I chose to put it on the homepage and keep it select-then-confirm instead of immediate scratch-on-click. That kept the UI more inspectable and reduced accidental actions during a demo.
 I also caught a CSS regression during the OpenAPI work instead of hand-waving it away, and I chose to simplify the site colors when readability suffered. That was the right trade-off for an assignment demo: plain and legible beats decorative styling.
 
 ### What AI was used for
@@ -43,6 +45,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - Split broad optional backlog items into specific GitHub issues once the mandatory scope is done, so stretch work stays reviewable and easy to prioritize.
 - Remove optional backlog items again when they are only plumbing and do not stand on their own as useful reviewer-facing scope.
 - Add a reviewer-facing audit log view on top of the persisted attempt trail before taking on broader optional features like a live grid or multi-game support.
+- Keep the optional grid driven by persisted backend state, but reveal only scratched cells so unclaimed prize positions stay hidden.
 - For the API docs stretch goal, use built-in ASP.NET Core OpenAPI generation plus Scalar instead of Swagger-specific tooling.
 - Add a lightweight regression test when a concrete UI integration issue is found, even if the assignment does not justify a full browser-test stack.
 
@@ -63,6 +66,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - That same rule also means dropping optional issues that are better folded into a stronger parent feature instead of preserving them as standalone backlog noise.
 - Built-in OpenAPI plus a homepage-linked docs UI improves reviewer visibility with low implementation risk and better matches modern .NET direction than adding Swagger.
 - When presentation gets in the way of clarity, simplify it. The assignment benefits more from readable UI than from visual styling.
+- A homepage grid is a stronger demo than row/column inputs, but select-then-confirm is still the safer interaction than one-click scratching.
 
 ### Notes for implementation
 
@@ -83,7 +87,7 @@ I also caught a CSS regression during the OpenAPI work instead of hand-waving it
 - Prefer optional work in this order: reviewer visibility first, then inspectability, then bigger architectural expansion.
 - Keep optional reviewer views read-only and grounded in persisted data rather than building demo-only mock state.
 - If interactive API docs are added, make them reachable from the homepage instead of leaving them as an undocumented route.
-- Keep optional reviewer views read-only and grounded in persisted data rather than building demo-only mock state.
+- If a grid is added, derive it from a backend board-state endpoint and avoid leaking unrevealed prize positions.
 
 ### What I want a reviewer to see
 
